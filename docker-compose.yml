@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: redis:7-alpine
+  api:
+    build: ./api
+    environment: [REDIS_URL=redis://redis:6379/0, API_KEY=change-me]
+    ports: ["8000:8000"]
+    depends_on: [redis]
+  worker:
+    build: ./worker
+    environment: [REDIS_URL=redis://redis:6379/0, COMFY_URL=]   # empty = mock mode
+    volumes: ["./artifacts:/artifacts"]
+    depends_on: [redis]
+    # GPU mode: add `deploy.resources.reservations.devices` (driver: nvidia, device_ids: ["0"])
